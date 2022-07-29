@@ -247,7 +247,7 @@
 ui <- bslib::page_navbar(
   
   window_title = "CLIMATE", title = "",
-  theme = bs_theme(bootswatch = "litera", version = 3, bg = "white", fg = "black", font_scale = 0.8),
+  theme = bs_theme(bootswatch = "flatly", version = 3, bg = "white", fg = "black", font_scale = 0.8),
   
   tabPanel(
     "CLIMATE",
