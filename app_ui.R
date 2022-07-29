@@ -244,7 +244,7 @@
 
 
 
-ui <- page_navbar(
+ui <- bslib::page_navbar(
   
   window_title = "CLIMATE", title = "",
   theme = bs_theme(bootswatch = "litera", version = 5, bg = "white", fg = "black", font_scale = 0.8),
