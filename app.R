@@ -1,7 +1,12 @@
 
 # Libraries --------------------------------------------------------------------
 
-install.packages("bslib")
+
+install.packages("devtools")
+require(devtools)
+install_version("bslib", version = "0.3.1", repos = "http://cran.us.r-project.org")
+
+
 
 if (!require("pacman")) install.packages("pacman")
 
