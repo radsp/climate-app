@@ -1,7 +1,7 @@
 
 # Libraries --------------------------------------------------------------------
 
-install.package("bslib")
+install.packages("bslib")
 
 if (!require("pacman")) install.packages("pacman")
 
