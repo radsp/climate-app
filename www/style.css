@@ -1,0 +1,105 @@
+/* Reduce font size in select input */
+/*.selectize-input{
+  font-size: 90%;
+  line-height: 90%;
+  min-height: 0;
+  padding:6px;
+}
+
+.selectize-dropdown{
+  font-size:90%;
+  line-height:90%;
+  min-height:0;
+  padding:6px;
+}
+
+#ctry_track{
+  font-size:90%;
+  line-height:90%;
+  min-height:0;
+  padding:6px;
+}  */
+
+
+/* Space between input label and the dropdown */
+.shiny-input-container > label {
+  margin-bottom: -15px;
+}
+
+
+
+/* Remove navbar title */
+.navbar-brand{
+  display:none !important;
+  width: 0px !important;
+}
+
+.navbar-nav > li > a {
+  padding-top:10px !important;
+  padding-bottom: 10px !important; 
+  height: 40px; 
+}
+
+.navbar {
+  min-height: 40px !important;
+} 
+
+#panel2 {
+  overflow-y: auto;
+}
+
+.panel-large{
+  left:20px;
+  height:100%;
+  width:95%;
+}
+
+.panel-small{
+  left:10px;
+  height:100%;
+  width:80%;
+}
+
+.tooltip > .tooltip-inner {
+  width: 75px;
+}
+
+
+.linered {
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background-color:#cc3311;
+  vertical-align: middle;
+}
+
+.lineblue {
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background-color:#0077BB;
+  vertical-align: middle;
+}
+
+.lineorange {
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background-color:#EE7733;
+  vertical-align: middle;
+}
+
+.dash-container {
+  position:relative;
+  text-align: center;
+}
+
+.dash-line {
+  border-top: 1px dashed #000;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    z-index: -2;
+}
+  
+

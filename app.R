@@ -10,8 +10,9 @@ install_version("bslib", version = "0.3.1", repos = "http://cran.us.r-project.or
 
 if (!require("pacman")) install.packages("pacman")
 
-pacman::p_load(dplyr, knitr, lubridate, readr, readxl, tidyr, tools, forcats, ggplot2,
-               shiny, shinyjs, shinythemes, shinyWidgets, shinyBS, leaflet, shinybusy)
+pacman::p_load(plyr, tidyverse, ggplot2, leaflet, plotly,
+               shiny, shinyjs, shinythemes, shinyWidgets, shinyBS, shinybusy,
+               shinydashboard, shinycssloaders)
 
 
 library(civis)
@@ -20,8 +21,15 @@ library(bslib)
 # Source ------------------------------------------------------------------------
 
 # source("util.R")
+# source("mod-fns.R")
+
+source("global.R")
+source("fun.R")
+source("home.R")
+source("trackers.R")
 source("app_ui.R")
 source("app_server.R")
+
 
 
 # App ----------------------------------------------------------------------------
