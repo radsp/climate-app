@@ -2,7 +2,7 @@ ui <- fluidPage(
   
   includeCSS("www/style.css"),
   
-  page_navbar(
+  bslib::page_navbar(
     
     theme = bs_theme(bootswatch = "paper", version = 3, fg = "black", bg = "white"),
     
