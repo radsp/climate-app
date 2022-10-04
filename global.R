@@ -6,7 +6,7 @@
 # x0 <- read_csv("data/climate_test.csv", show_col_types = F)
 
 ## If on platform
-x0 <- read_civis('staging_pmihq.climate_app') %>%
+x0 <- read_civis(sql("SELECT * FROM staging_pmihq.climate_app WHERE (country IN ('Malawi', 'Rwanda', 'Senegal') AND (variable_name = 'rf'))")) %>%
   mutate(date = as.Date(as.character(date)))
 
 x0 <- x0 %>%
