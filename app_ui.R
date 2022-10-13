@@ -1,6 +1,6 @@
 ui <- navbarPage(
   
-  includeCSS("www/style.css"),
+  # includeCSS("www/style.css"),
   # theme = shinytheme("cerulean"),
   
   # bslib::page_navbar(

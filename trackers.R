@@ -3,6 +3,7 @@ tab_trackers <-
   tabPanel(
     "Trackers",
     useShinyjs(),
+    includeCSS("www/style.css"),
     
     tags$head(HTML("<script type='text/javascript' src='keep-alive.js'></script>")),
     
