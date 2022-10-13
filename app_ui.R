@@ -2,7 +2,7 @@ ui <- fluidPage(
   
   includeCSS("www/style.css"),
   
-  pageNavbar(
+  navbarPage(
   # bslib::page_navbar(
     
   #   theme = bs_theme(bootswatch = "paper", version = 3, 
@@ -28,7 +28,7 @@ ui <- fluidPage(
     tabPanel("Download Data"),
     
     title = "CLIMATE",
-    window_title = "CLIMATE",
+    # window_title = "CLIMATE",
     inverse = F
     
     
