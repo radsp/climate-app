@@ -189,7 +189,7 @@ plot_ev_ssn <- function(u, show_legend = T, ymax_val, ev_par, yrs, pcol, prow, e
     
     tick2 <- pretty(epi_par$minaxs:epi_par$epi_max)
     
-    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = cut_short_scale())(tick2))
+    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = scales::cut_short_scale())(tick2))
     
     p <- add_trace(p, x = ~ xpos, y = ~ ypos, text = ~ text, type = "scatter", mode = "text",
                    textposition = 'middle left', data = tdf, yaxis = "y2", 
@@ -547,7 +547,7 @@ plot_ev_histo <- function(u, show_legend = T, ymax_val, ev_par, pcol, prow, epi_
     
     tick2 <- pretty(epi_par$minaxs:epi_par$epi_max)
     
-    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = cut_short_scale())(tick2))
+    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = scales::cut_short_scale())(tick2))
     
     if(epi_par$label == "TPR") {
       epi_val <- paste0("%{y:.2f} ", epi_par$unit)
