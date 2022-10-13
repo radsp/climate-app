@@ -189,7 +189,7 @@ plot_ev_ssn <- function(u, show_legend = T, ymax_val, ev_par, yrs, pcol, prow, e
     
     tick2 <- pretty(epi_par$minaxs:epi_par$epi_max)
     
-    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = scales::cut_short_scale())(tick2))
+    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = cut_short_scale())(tick2))
     
     p <- add_trace(p, x = ~ xpos, y = ~ ypos, text = ~ text, type = "scatter", mode = "text",
                    textposition = 'middle left', data = tdf, yaxis = "y2", 
@@ -413,7 +413,7 @@ get_dummy <- function(u, ev = NULL, epi = NULL, agg, yrs = c(2021, 2022), ssn = 
 }
 
 
-get_plot_ssn <- function(u, ev = NULL, epi = NULL, agg, yrs = c(2021, 2022), ssn = "cy", yax_std = F, ssize = c(1200, 950)) {
+get_plot_ssn <- function(u, ev = NULL, epi = NULL, agg, yrs = c(2021, 2022), ssn = "cy", yax_std = F, ssize = c(1200, 950), order = "alpha") {
   
   # if(is.null(ev)) {ev = unique(xdf$variable_name)}
   
@@ -455,14 +455,25 @@ get_plot_ssn <- function(u, ev = NULL, epi = NULL, agg, yrs = c(2021, 2022), ssn
   
   ugrp <- split(u1, u1$geo_id)
   
-  alpha_order <- u1 %>% select(geo_id, country, admin_level_1, admin_level_2) %>%
-    distinct() %>% arrange(country, admin_level_1, admin_level_2)
   
-  ugrp <- ugrp[c(as.character(alpha_order$geo_id))]
+  if(order == "alpha") {
+    alpha_order <- u1 %>% select(geo_id, country, admin_level_1, admin_level_2) %>%
+      distinct() %>% arrange(country, admin_level_1, admin_level_2)
+    
+    ugrp <- ugrp[c(as.character(alpha_order$geo_id))]
+  } else {
+    
+    ll_order <- u1 %>% select(geo_id) %>% distinct() %>%
+      left_join(., ctrll) %>% arrange(lat)
+    ugrp <- ugrp[rev(c(as.character(ll_order$geo_id)))]
+    
+  }
+  
+  
   
   ncols <- ifelse(ssize[1] < 980, 3, 5)
   
-  nrows <- ceiling(length(adm_grp)/ncols)
+  nrows <- as.integer(ceiling((length(adm_grp))/ncols))
     
   
   pp <- list()
@@ -506,8 +517,8 @@ get_plot_ssn <- function(u, ev = NULL, epi = NULL, agg, yrs = c(2021, 2022), ssn
   
   
   subplot(pp, nrows = nrows, #, margin = c(0.03, 0.03, 0.03, 0.03)#, 
-         widths = rep(signif(0.98/ncols, digits=3), ncols), heights = rep(signif(0.98/nrows, digits = 5), nrows)
-          ) %>% 
+          widths = rep(signif(0.98/ncols, digits=3), ncols), heights = rep(signif(0.98/nrows, digits = 5), nrows)
+  ) %>% 
     layout(showlegend = F)
   
 }
@@ -547,7 +558,7 @@ plot_ev_histo <- function(u, show_legend = T, ymax_val, ev_par, pcol, prow, epi_
     
     tick2 <- pretty(epi_par$minaxs:epi_par$epi_max)
     
-    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = scales::cut_short_scale())(tick2))
+    tdf <- data.frame(xpos = max(u$date), ypos = tick2, text = label_number(scale_cut = cut_short_scale())(tick2))
     
     if(epi_par$label == "TPR") {
       epi_val <- paste0("%{y:.2f} ", epi_par$unit)

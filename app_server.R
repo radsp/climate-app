@@ -8,6 +8,19 @@ server <-function(input, output, session) {
     return(as.numeric(input$dimension))
   })
   
+  # observeEvent(input$dimension, {
+  #   
+  #   ssize <- screen_dim()
+  #   
+  #   ncols <- ifelse(ssize[1] < 980, 3, 5)
+  #   
+  #   nrows <- as.integer(ceiling((length(ctry))/ncols))
+  #   
+  #   print(paste0("ncol = ", ncols, ", nrows = ", nrows))
+  # }, ignoreNULL = F)
+  
+  
+  
  
   
   # Trackers tab -----------------------------------------------------------------------------
@@ -499,8 +512,15 @@ server <-function(input, output, session) {
     yax_std <- ifelse(input$yax_ssn == "Same", TRUE, FALSE)
 
     tt1 <- proc.time()
+    
+    if(input$sort_ssn == "Alphabetically") {
+      order <- "alpha"
+    } else {
+      order <- "lat"
+    }
+    
 
-    uu <- get_plot_ssn(u = x2pl$df, ev = x2pl$ev, epi = x2pl$epi, agg = x2pl$agg, yrs = x2pl$yrs, ssn = "cy", yax_std = yax_std, ssize = ssize)
+    uu <- get_plot_ssn(u = x2pl$df, ev = x2pl$ev, epi = x2pl$epi, agg = x2pl$agg, yrs = x2pl$yrs, ssn = "cy", yax_std = yax_std, ssize = ssize, order = order)
 
     # tt2 <- proc.time()
 
@@ -539,6 +559,219 @@ server <-function(input, output, session) {
     return(uu)
     
   })
+  
+  
+  
+  # Download Tab -------------------------------------------------------------------------------------
+  
+  observeEvent(input$gres_down, {
+    
+    nctry <- length(input$adm0_down)
+    
+    if (input$gres_down == "admin0") {
+      
+      updatePickerInput(
+        session = session, inputId = "adm1_down",
+        choices = "None", selected = "None"
+      )
+      updatePickerInput(
+        session = session, inputId = "adm2_down",
+        choices = "None", selected = "None"
+      )
+      updatePickerInput(
+        session = session, inputId = "adm0_down",
+        options = list(`actions-box` = TRUE)
+      )
+      shinyjs::disable("adm1_down")
+      shinyjs::disable("adm2_down")
+      
+      
+    } else if (input$gres_down == "admin1") {
+      
+      if(nctry > 1) {
+        
+        if( nctry > 3) {
+          adm0_slctd <- input$adm0_down[1:3]
+        } else {
+          adm0_slctd <- input$adm0_down
+        }
+        
+        updatePickerInput(
+          session = session, inputId = "adm0_down", selected = adm0_slctd,
+          options = list(`max-options` = 3, `actions-box` = TRUE, `selectedTextFormat` = 'count > 3'))
+        
+      }
+      
+      adm1_list <- get_choice_adm1(input$adm0_down)
+      
+      
+      if (any(input$adm1_down %in% adm1_list$selected)) {
+        adm1_slctd <- input$adm1_down[input$adm1_down %in% adm1_list$selected]
+      } else {
+        adm1_slctd <- adm1_list$selected
+      }
+      
+      if (length(adm1_slctd) > 30) {adm1_slctd <- adm1_slctd[1:30]}
+      
+      if (nctry > 1) {
+        nmax1 <- 30
+      } else {
+        nmax1 <- NULL
+      }
+      
+      updatePickerInput (
+        session = session, inputId = "adm1_down", choices = adm1_list$choice, selected = adm1_list$selected, 
+        options = list(`actions-box` = TRUE, `selectedTextFormat` = 'count > 3', `maxOptions` = nmax1))
+      
+      updatePickerInput(
+        session = session, inputId = "adm2_down",
+        choices = "None", selected = "None"
+      )
+      
+      shinyjs::enable("adm1_down")
+      shinyjs::disable("adm2_down")
+      
+    } else {
+      
+      if( length(input$adm0_down) > 3) {
+        adm0_slctd <- input$adm0_down[1:3]
+      } else {
+        adm0_slctd <- input$adm0_down
+      }
+      
+      updatePickerInput(
+        session = session, inputId = "adm0_down", selected = adm0_slctd,
+        options = list(`max-options` = 3, `actions-box` = TRUE, `selectedTextFormat` = 'count > 3'))
+      
+      adm1_list <- get_choice_adm1(input$adm0_down)
+      
+      if (any(input$adm1_down %in% adm1_list$selected)) {
+        adm1_tmp <- input$adm1_down[input$adm1_down %in% adm1_list$selected]
+        adm1_slctd <- adm1_tmp[1:(min(length(adm1_tmp), 5))]
+      } else {
+        adm1_slctd <- adm1_list$selected[1:5]
+      }
+      
+      if (nctry > 1) {
+        nmax1 <- 30
+      } else {
+        nmax1 <- NULL
+      }
+      
+      
+      updatePickerInput(
+        session, inputId = "adm1_down", choices = adm1_list$choice, selected = adm1_slctd, 
+        options = list(`max-options` = nmax1, `actions-box` = TRUE, `selectedTextFormat` = 'count > 3'))
+      
+      adm2_list <- get_choice_adm2(input$adm0_down, adm1_slctd)
+      
+      updatePickerInput(
+        session, inputId = "adm2_down", choices = adm2_list$choice, selected = adm2_list$selected, 
+        options = list(`actions-box` = TRUE, `selectedTextFormat` = 'count > 3')
+      )
+      
+      shinyjs::enable("adm1_down")
+      shinyjs::enable("adm2_down")
+      
+    }
+    
+  }
+  )
+  
+  
+  observeEvent(input$adm0_down,{
+    
+    adm1_list <- get_choice_adm1(input$adm0_down)
+    
+    if ( (any(input$adm1_down %in% "None")) & (any(input$adm1_down %in% adm1_list$selected)) ) {
+      adm1_slctd <- input$adm1_down[input$adm1_down %in% adm1_list$selected]
+    } else {
+      adm1_slctd <- adm1_list$selected
+    }
+    
+    if (input$gres_down == "admin1") {
+      updatePickerInput (
+        session = session, inputId = "adm1_down",
+        choices = adm1_list$choice, selected = adm1_slctd,
+        options = list(`actions-box` = TRUE, `selectedTextFormat` = 'count > 3'))
+    } else if (input$gres_down == "admin2") {
+      if(length(input$adm0_down) > 1){
+        updatePickerInput(
+          session = session, inputId  = "adm1_down",
+          choices = adm1_list$choice, selected = adm1_slctd[1:5],
+          options = list(`action-box` = TRUE, `max-options` = 5, `selectedTextFormat` = 'count > 3'))
+      } else {
+        updatePickerInput(
+          session = session, inputId  = "adm1_down",
+          choices = adm1_list$choice, selected = adm1_slctd[1:5],
+          options = list(`action-box` = TRUE, `max-options` = 5, `selectedTextFormat` = 'count > 3')
+        )
+      }
+    }
+  })
+  
+  
+  observeEvent(input$adm1_down, {
+    if (input$gres_down == "admin2")  {
+      adm2_list <- get_choice_adm2(input$adm0_down, input$adm1_down)
+      updatePickerInput(
+        session = session, inputId  = "adm2_down",
+        choices = adm2_list$choice, selected = adm2_list$selected,
+        options = list(`action-box` = TRUE, `selectedTextFormat` = 'count > 3')
+      )
+    }
+  })
+  
+  
+  
+  xtab <- eventReactive (input$godata, {
+    
+    if(input$gres_down == "admin0") {
+      gid <- input$adm0_down; agg <- 0; adm_var <- "country"
+    } else if (input$gres_down == "admin1") {
+      gid <- input$adm1_down; agg <- 1; adm_var <- c("country", "admin_level_1")
+    } else {
+      gid <- input$adm2_down; agg <- 2; adm_var <- c("country", "admin_level_1", "admin_level_2")
+    }
+    
+    # y <- x0 %>%
+    #   filter((geo_id %in% gid) & (variable_name %in% input$ev_down) & (date >= input$date_down[1]) & (date <= input$date_down[2])) %>%
+    #   select(c(all_of(adm_var), variable_name, date, value, monthly_ave, minval, maxval)) %>%
+    #   rename(longterm_mean = monthly_ave, longterm_min = minval, longterm_max = maxval)
+    
+    nev <- length(input$ev_down)
+    qev <- ifelse(nev == 1, paste0("= '", input$ev_down, "'"), 
+                  paste0("IN (", paste0(paste0("'", input$ev_down, "'"), collapse = ", "), ")"))
+    
+    query <- paste0("SELECT geo_id,", adm_var, 
+                ", variable_name, date, value monthly_ave, minval, maxval 
+                FROM staging_pmihq.climate_app WHERE ",
+                "geo_id IN (", paste0(gid, collapse = ", "), ") AND ",
+                "variable_name ", qev,  " AND (date BETWEEN '", input$date_down[1], "' AND '", input$date_down[2], "');") 
+    
+    
+    y <- read_civis(sql(query)) %>%
+      mutate(date = as.Date(as.character(date)))
+    
+    return(y)
+    
+  }, ignoreNULL = T)
+  
+  
+  output$table <- renderTable({
+    yy <- xtab()
+    yy[1:10,]
+  })
+  
+  
+  output$download_btn <- downloadHandler(
+    filename <- function() {
+      paste0("MDIVE_", paste0(input$ev_down, collapse = "_"), '.csv')
+    },
+    content = function(file){
+      write.csv(xtab(), file, row.names = F)
+    }
+  )
   
 }
 
