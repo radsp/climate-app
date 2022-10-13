@@ -12,7 +12,7 @@ if (!require("pacman")) install.packages("pacman")
 
 pacman::p_load(plyr, tidyverse, ggplot2, leaflet, plotly, 
                shiny, shinyjs, shinythemes, shinyWidgets, shinyBS, shinybusy,
-               shinydashboard, shinycssloaders, scales, bslib)
+               shinydashboard, shinycssloaders, scales)
 install.packages("scales")
 
 library(civis)
