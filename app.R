@@ -6,18 +6,20 @@
 # require(devtools)
 # install_version("bslib", version = "0.3.1", repos = "http://cran.us.r-project.org")
 
+require(devtools)
+install_version("scales", version = "1.2.1", repos = "http://cran.us.r-project.org")
 
 # 
 if (!require("pacman")) install.packages("pacman")
 
 pacman::p_load(plyr, tidyverse, ggplot2, leaflet, plotly, 
                shiny, shinyjs, shinythemes, shinyWidgets, shinyBS, shinybusy,
-               shinydashboard, shinycssloaders, scales)
+               shinydashboard, shinycssloaders)
 install.packages("scales")
 
 library(civis)
 # library(bslib)
-# library(scales)
+library(scales)
 
 # Source ------------------------------------------------------------------------
 
