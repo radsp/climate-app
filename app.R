@@ -30,6 +30,7 @@ source("global.R")
 source("fun.R")
 source("home.R")
 source("trackers.R")
+source("downloads.R")
 source("app_ui.R")
 source("app_server.R")
 
