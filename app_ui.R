@@ -2,10 +2,11 @@ ui <- fluidPage(
   
   includeCSS("www/style.css"),
   
-  bslib::page_navbar(
+  pageNavbar(
+  # bslib::page_navbar(
     
-    theme = bs_theme(bootswatch = "paper", version = 3, 
-                     fg = "black", bg = "white"),
+  #   theme = bs_theme(bootswatch = "paper", version = 3, 
+  #                    fg = "black", bg = "white"),
     
     useShinyjs(),
     
