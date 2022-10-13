@@ -7,7 +7,7 @@
 # install_version("bslib", version = "0.3.1", repos = "http://cran.us.r-project.org")
 
 require(devtools)
-install_version("scales", version = "1.2.1", repos = "http://cran.us.r-project.org")
+install_version("scales", version = "1.2.0", repos = "http://cran.us.r-project.org")
 
 # 
 if (!require("pacman")) install.packages("pacman")
