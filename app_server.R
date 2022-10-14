@@ -750,7 +750,8 @@ server <-function(input, output, session) {
                 "variable_name ", qev,  " AND (date BETWEEN '", input$date_down[1], "' AND '", input$date_down[2], "');") 
     
     
-    y <- read_civis(sql(query)) %>%
+    y <- read_civis(sql(query),
+                    database = "PMI") %>%
       mutate(date = as.Date(as.character(date)))
     
     return(y)

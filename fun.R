@@ -83,7 +83,8 @@ get_data_main <- function(adm_res, gid0, gid1, gid2, ev, epi = NULL) {
   # y <- x0 %>%
   #   filter((geo_id %in% gid) & (variable_name == ev) & (aggregation_level == agg)) 
   
-  y <- read_civis(sql(query)) %>%
+  y <- read_civis(sql(query),
+                  database = "PMI") %>%
     mutate(date = as.Date(as.character(date)))
   
   n0 <- length(unique(y$country))

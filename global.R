@@ -20,7 +20,8 @@ mo_lookup <- data.frame(month = 1:12, month_ssn = c(7:12, 1:6)) %>%
 
 date_now <- as.Date(paste0(format(Sys.Date(), "%Y-%m"), "-01"))
 
-ctrll <- read_civis('staging_pmihq.climate_app_ctrll')
+ctrll <- read_civis('staging_pmihq.climate_app_ctrll',
+                    database = "PMI")
    
 
 # Colors ---------------------------------------------------
