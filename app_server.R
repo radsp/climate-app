@@ -1,5 +1,15 @@
 server <- function(input, output, session) {
-
+  # User Level Filtering -----------
+  # check if the app is running locally or on MDIVE
+  query <- shiny::parseQueryString(session$request$QUERY_STRING)
+  userid <- query$civisuserid
+  CIVIS_SERVICE_ID <- Sys.getenv("CIVIS_SERVICE_ID")
+  
+  if (is.null(userid) && CIVIS_SERVICE_ID == "") {
+    message("Running locally. Getting user from API")
+    userid <- civis::users_list_me()$id
+  }
+  
   # Prevent "greying out" when running in Civis Platform
   observe(input$alive_count)
   session$allowReconnect("force")
@@ -484,8 +494,13 @@ server <- function(input, output, session) {
         epi <- input$epi_track
       }
       get_data_main(
-        adm_res = input$gres_track, gid0 = input$adm0_track,
-        gid1 = input$adm1_track, gid2 = input$adm2_track, ev = input$ev_track, epi = epi
+        adm_res = input$gres_track, 
+        gid0 = input$adm0_track,
+        gid1 = input$adm1_track, 
+        gid2 = input$adm2_track, 
+        ev = input$ev_track, 
+        epi = epi,
+        userid
       )
     },
     ignoreNULL = F
@@ -759,6 +774,7 @@ server <- function(input, output, session) {
         database = "PMI"
       ) %>%
         mutate(date = as.Date(as.character(date)))
+      y <- mdiver::user_level_filter_data(y, user =  userid)
 
       return(y)
     },
