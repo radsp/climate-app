@@ -32,6 +32,12 @@ ctrll <- read_civis(
   database = "PMI"
 )
 
+# Import all Climate + QR data
+df_all <- read_civis(
+  x = "staging_pmihq.climate_app",
+  database = "PMI"
+) %>%
+  mutate(date = lubridate::ymd(date))
 
 # Colors ---------------------------------------------------
 

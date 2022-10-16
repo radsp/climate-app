@@ -10,6 +10,51 @@ server <- function(input, output, session) {
     userid <- civis::users_list_me()$id
   }
   
+  # Change this to test the  user permissions for a given userid
+  # userid <- 10780 # PMI Quality Control user (all countries, except Myanmar)
+  
+  df_all_ulf <- mdiver::user_level_filter_data(df_all, user =  userid)
+  
+  countries_granted <- reactive({
+    df_all_ulf %>%
+      filter(aggregation_level == 0) %>%
+      select(geo_id, country) %>%
+      distinct() %>%
+      arrange(country) %>%
+      relocate(country) %>%
+      deframe()
+  })
+  
+  # Restrict the  select-able countries to the countries that the user is granted on
+  ## Trackers Tab ("adm0_track")
+  observeEvent(countries_granted,{
+    # Trackers Tab
+    shinyWidgets::updatePickerInput(
+      session,
+      inputId = "adm0_track",
+      label = HTML("Country"),
+      choices = countries_granted(),
+      selected = as.vector(countries_granted()),
+      options = list(
+        `actions-box` = TRUE, 
+        `selectedTextFormat` = "count > 3"
+        )
+    )
+    
+    # Download Tab
+    shinyWidgets::updatePickerInput(
+      session,
+      inputId = "adm0_down",
+      label = HTML("Country"),
+      choices = countries_granted(),
+      selected = as.vector(countries_granted()),
+      options = list(
+        `actions-box` = TRUE, 
+        `selectedTextFormat` = "count > 3"
+      )
+    )
+  })
+  
   # Prevent "greying out" when running in Civis Platform
   observe(input$alive_count)
   session$allowReconnect("force")
@@ -756,24 +801,31 @@ server <- function(input, output, session) {
       #   select(c(all_of(adm_var), variable_name, date, value, monthly_ave, minval, maxval)) %>%
       #   rename(longterm_mean = monthly_ave, longterm_min = minval, longterm_max = maxval)
 
-      nev <- length(input$ev_down)
-      qev <- ifelse(nev == 1, paste0("= '", input$ev_down, "'"),
-        paste0("IN (", paste0(paste0("'", input$ev_down, "'"), collapse = ", "), ")")
-      )
+      # nev <- length(input$ev_down)
+      # qev <- ifelse(nev == 1, paste0("= '", input$ev_down, "'"),
+      #   paste0("IN (", paste0(paste0("'", input$ev_down, "'"), collapse = ", "), ")")
+      # )
+      #
+      # query <- paste0(
+      #   "SELECT geo_id,", adm_var,
+      #   ", variable_name, date, value monthly_ave, minval, maxval
+      #           FROM staging_pmihq.climate_app WHERE ",
+      #   "geo_id IN (", paste0(gid, collapse = ", "), ") AND ",
+      #   "variable_name ", qev, " AND (date BETWEEN '", input$date_down[1], "' AND '", input$date_down[2], "');"
+      # )
 
-      query <- paste0(
-        "SELECT geo_id,", adm_var,
-        ", variable_name, date, value monthly_ave, minval, maxval
-                FROM staging_pmihq.climate_app WHERE ",
-        "geo_id IN (", paste0(gid, collapse = ", "), ") AND ",
-        "variable_name ", qev, " AND (date BETWEEN '", input$date_down[1], "' AND '", input$date_down[2], "');"
-      )
 
-
-      y <- read_civis(sql(query),
-        database = "PMI"
-      ) %>%
-        mutate(date = as.Date(as.character(date)))
+      # y <- read_civis(sql(query),
+      #   database = "PMI"
+      # ) %>%
+      #   mutate(date = as.Date(as.character(date)))
+      
+      y <- df_all %>%
+        filter(geo_id %in% gid,
+               variable_name %in% input$ev_down,
+               date >= input$date_down[1],
+               date <= input$date_down[2]) %>%
+        select(c(all_of(adm_var), variable_name, date, value, monthly_ave, minval, maxval))
       y <- mdiver::user_level_filter_data(y, user =  userid)
 
       return(y)

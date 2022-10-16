@@ -91,25 +91,29 @@ get_data_main <- function(adm_res, gid0, gid1, gid2, ev, epi = NULL, userid) {
     gid <- gid2
     agg <- 2
   }
-
-  query <- paste0(
-    "SELECT * FROM staging_pmihq.climate_app WHERE ",
-    "geo_id IN (", paste0(gid, collapse = ", "), ") AND ",
-    "variable_name = '", ev, "' AND aggregation_level = ", agg
-  )
-
-  # y <- x0 %>%
-  #   filter((geo_id %in% gid) & (variable_name == ev) & (aggregation_level == agg))
-
-  y <- read_civis(sql(query),
-    database = "PMI"
-  ) %>%
-    mutate(date = as.Date(as.character(date)))
+  
+  # query <- paste0(
+  #   "SELECT * FROM staging_pmihq.climate_app WHERE ",
+  #   "geo_id IN ('", paste0(gid, collapse = "', '"), "') AND ",
+  #   "variable_name = '", ev, "' AND aggregation_level = ", agg
+  # )
+  #
+  # y <- read_civis(sql(query),
+  #   database = "PMI"
+  # ) %>%
+  #   mutate(date = as.Date(as.character(date)))
+  
+  y <- df_all %>%
+    filter(
+      geo_id %in% gid,
+      variable_name == ev,
+      aggregation_level == agg
+    )
   y <- mdiver::user_level_filter_data(y, user =  userid)
-
+  
   n0 <- length(unique(y$country))
   n1 <- length(unique(y$admin_level_1))
-
+  
   if ((n0 == 1) & (n1 <= 1)) {
     y$adm_label <- y$adm_label_tmp
   } else if ((n0 == 1) & (n1 > 1)) {
@@ -127,8 +131,9 @@ get_data_main <- function(adm_res, gid0, gid1, gid2, ev, epi = NULL, userid) {
       y$adm_label <- y$adm_label012
     }
   }
-
-  y <- y %>% select(-c(adm_label_tmp, adm_label01, adm_label012, adm_label12))
+  
+  y <- y %>% 
+    select(-c(adm_label_tmp, adm_label01, adm_label012, adm_label12))
   out <- list(df = y, agg = agg, ev = ev, epi = epi)
 
   return(out)
