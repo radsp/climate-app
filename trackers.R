@@ -57,6 +57,11 @@ tab_trackers <-
                   "Malaria Deaths" = "malaria_deaths", "Malaria Deaths per 10K" = "malaria_deaths_rate"
                 ),
                 selected = "none"
+              ),
+              shinyBS::bsTooltip(
+                id = "epi_track",
+                title = "Access Restricted by Country",
+                placement = "top"
               )
             ),
             column(
