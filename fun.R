@@ -781,7 +781,8 @@ get_plot_histo <- function(u, ev = NULL, epi = NULL, agg, date_range, ssn = "cy"
   ncols <- min(5, length(pp))
   subplot(pp,
     nrows = nrows, # , margin = c(0.03, 0.03, 0.03, 0.03)#,
-    widths = rep(signif(0.98 / ncols, digits = 3), ncols), heights = rep(signif(0.98 / nrows, digits = 5), nrows)
+    widths = rep(signif(0.98 / 5, digits = 3), times = ncols), 
+    heights = rep(signif(0.98 / nrows, digits = 5), times = nrows)
   ) %>%
     layout(showlegend = F)
 }
