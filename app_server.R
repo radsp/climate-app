@@ -12,48 +12,27 @@ server <- function(input, output, session) {
   
   # Change this to test the  user permissions for a given userid
   # userid <- 10780 # PMI Quality Control user (all countries, except Myanmar)
+  # userid <-14237 # Busisani Dube (Zimbabwe only)
   
-  df_all_ulf <- mdiver::user_level_filter_data(df_all, user =  userid)
+  countries_granted <- get_countries(user = userid, permissionset = mdiver::MDIVE_PERMISSION_SET_ID)
   
-  countries_granted <- reactive({
-    df_all_ulf %>%
-      filter(aggregation_level == 0) %>%
-      select(geo_id, country) %>%
-      distinct() %>%
-      arrange(country) %>%
-      relocate(country) %>%
-      deframe()
-  })
-  
-  # Restrict the  select-able countries to the countries that the user is granted on
-  ## Trackers Tab ("adm0_track")
-  observeEvent(countries_granted,{
-    # Trackers Tab
-    shinyWidgets::updatePickerInput(
-      session,
-      inputId = "adm0_track",
-      label = HTML("Country"),
-      choices = countries_granted(),
-      selected = as.vector(countries_granted()),
-      options = list(
-        `actions-box` = TRUE, 
-        `selectedTextFormat` = "count > 3"
-        )
+  epi_cols <- c(
+    "suspected_cases",
+    "suspected_cases_rate",
+    "tested_cases", 
+    "tested_cases_rate",
+    "confirmed_cases",
+    "confirmed_cases_rate",
+    "tpr",
+    "severe_cases",
+    "severe_cases_rate",
+    "malaria_deaths",
+    "malaria_deaths_rate"
     )
-    
-    # Download Tab
-    shinyWidgets::updatePickerInput(
-      session,
-      inputId = "adm0_down",
-      label = HTML("Country"),
-      choices = countries_granted(),
-      selected = as.vector(countries_granted()),
-      options = list(
-        `actions-box` = TRUE, 
-        `selectedTextFormat` = "count > 3"
-      )
-    )
-  })
+  
+  # Remove surveillance data for countries the user does not have access to
+  df_all_ulf <- df_all
+  df_all_ulf[!(df_all_ulf$country %in% countries_granted), epi_cols] <- NA
   
   # Prevent "greying out" when running in Civis Platform
   observe(input$alive_count)
@@ -539,6 +518,7 @@ server <- function(input, output, session) {
         epi <- input$epi_track
       }
       get_data_main(
+        df = df_all_ulf,
         adm_res = input$gres_track, 
         gid0 = input$adm0_track,
         gid1 = input$adm1_track, 
@@ -820,13 +800,12 @@ server <- function(input, output, session) {
       # ) %>%
       #   mutate(date = as.Date(as.character(date)))
       
-      y <- df_all %>%
+      y <- df_all_ulf %>%
         filter(geo_id %in% gid,
                variable_name %in% input$ev_down,
                date >= input$date_down[1],
                date <= input$date_down[2]) %>%
         select(c(all_of(adm_var), variable_name, date, value, monthly_ave, minval, maxval))
-      y <- mdiver::user_level_filter_data(y, user =  userid)
 
       return(y)
     },

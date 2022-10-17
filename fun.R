@@ -80,7 +80,7 @@ get_choice_adm2 <- function(ctry_list, adm1_list) {
 # xu <- get_data_main(adm_res = "admin0", gid, gid1 = NULL, gid2 = NULL, ev = ev)
 
 
-get_data_main <- function(adm_res, gid0, gid1, gid2, ev, epi = NULL, userid) {
+get_data_main <- function(df, adm_res, gid0, gid1, gid2, ev, epi = NULL, userid) {
   if (adm_res == "admin0") {
     gid <- gid0
     agg <- 0
@@ -103,14 +103,13 @@ get_data_main <- function(adm_res, gid0, gid1, gid2, ev, epi = NULL, userid) {
   # ) %>%
   #   mutate(date = as.Date(as.character(date)))
   
-  y <- df_all %>%
+  y <- df %>%
     filter(
       geo_id %in% gid,
       variable_name == ev,
       aggregation_level == agg
     )
-  y <- mdiver::user_level_filter_data(y, user =  userid)
-  
+
   n0 <- length(unique(y$country))
   n1 <- length(unique(y$admin_level_1))
   
